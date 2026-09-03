@@ -1,0 +1,4 @@
+# Keep the family data out of search results. Anyone with the link can still
+# open the page; it just will not be indexed or surfaced by search engines.
+User-agent: *
+Disallow: /
