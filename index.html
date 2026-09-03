@@ -1,0 +1,623 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lengyel Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f6f8; --panel:#ffffff; --sunken:#eef1f5; --band:#e6ecf3;
+  --ink:#14171c; --ink-2:#525c69; --ink-3:#8b95a3;
+  --rule:#dde3ea; --rule-2:#c8d2dd;
+  --cz:#2f6fb5; --pl:#c9601f; --east:#17876b; --unknown:#9aa5b3;
+  --land:#e7ebf0; --land-2:#dde3ea; --sea:#f4f6f8; --dot-ink:#38414d;
+  --shadow:0 1px 2px rgba(20,23,28,.05), 0 8px 24px -12px rgba(20,23,28,.18);
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0f1216; --panel:#161a20; --sunken:#12161b; --band:#1e242d;
+    --ink:#e9edf2; --ink-2:#a2acba; --ink-3:#6c7683;
+    --rule:#252b34; --rule-2:#333b46;
+    --cz:#4a90d8; --pl:#d1741f; --east:#1fa88a; --unknown:#69737f;
+    --land:#1c2129; --land-2:#232a33; --sea:#0f1216; --dot-ink:#aeb8c4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0f1216; --panel:#161a20; --sunken:#12161b; --band:#1e242d;
+  --ink:#e9edf2; --ink-2:#a2acba; --ink-3:#6c7683;
+  --rule:#252b34; --rule-2:#333b46;
+  --cz:#4a90d8; --pl:#d1741f; --east:#1fa88a; --unknown:#69737f;
+  --land:#1c2129; --land-2:#232a33; --sea:#0f1216; --dot-ink:#aeb8c4;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px 96px}
+@media (max-width:640px){ .wrap{padding:0 14px 64px} }
+
+/* ---------------------------------------------------------------- masthead */
+header.mast{padding:64px 0 40px; border-bottom:1px solid var(--rule)}
+@media (max-width:640px){ header.mast{padding:36px 0 28px} }
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 18px;
+}
+h1{
+  font-family:Spectral,Georgia,serif; font-weight:600; font-size:clamp(2.4rem,6vw,4rem);
+  line-height:1.04; letter-spacing:-.02em; margin:0 0 18px; text-wrap:balance;
+}
+.standfirst{
+  font-family:Spectral,Georgia,serif; font-size:clamp(1.05rem,2.2vw,1.3rem); line-height:1.55;
+  color:var(--ink-2); max-width:60ch; margin:0 0 32px;
+}
+.stats{display:flex; flex-wrap:wrap; gap:8px 40px; margin:0}
+.stat{display:flex; flex-direction:column; gap:2px}
+.stat b{
+  font-family:"IBM Plex Mono",monospace; font-size:1.45rem; font-weight:500;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+}
+.stat span{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
+
+/* ----------------------------------------------------------------- section */
+section{padding:56px 0 0}
+.sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:8px}
+h2{
+  font-family:Spectral,Georgia,serif; font-weight:600; font-size:clamp(1.55rem,3.4vw,2.1rem);
+  letter-spacing:-.015em; margin:0;
+}
+.num{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.lede{color:var(--ink-2); max-width:64ch; margin:6px 0 24px}
+
+/* ------------------------------------------------------------------ legend */
+.legend{display:flex; flex-wrap:wrap; gap:6px 20px; align-items:center; margin:0 0 18px; padding:0; list-style:none}
+.legend li{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-2)}
+.sw{width:22px; height:9px; border-radius:2px; flex:none}
+.sw.hatch{background-image:repeating-linear-gradient(135deg,transparent 0 3px,rgba(255,255,255,.55) 3px 5px)}
+.sw.dash{background:none; border-top:2px dotted var(--ink-3); height:0; border-radius:0}
+
+.panel{
+  background:var(--panel); border:1px solid var(--rule); border-radius:10px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+
+/* ---------------------------------------------------------------- timeline */
+.tl-scroll{overflow-x:auto; overflow-y:hidden}
+.tl{min-width:720px; padding:0 0 4px}
+.tl-axis{
+  position:relative; z-index:3; background:var(--panel);
+  border-bottom:1px solid var(--rule); height:84px;
+}
+.tl-axis .inner,.tl-body .inner,.grid .inner{position:relative; margin-left:180px; margin-right:22px; height:100%}
+@media (max-width:640px){ .tl-axis .inner,.tl-body .inner,.grid .inner{margin-left:132px} }
+.tick{position:absolute; top:22px; bottom:0; border-left:1px solid var(--rule)}
+.tick b{
+  position:absolute; top:-19px; left:5px; font-family:"IBM Plex Mono",monospace;
+  font-size:11px; font-weight:500; color:var(--ink-3); font-variant-numeric:tabular-nums;
+}
+.era{position:absolute; top:0; bottom:0; background:var(--band)}
+.era-line{position:absolute; top:0; bottom:0; border-left:1px dashed var(--rule-2)}
+.era-lab{
+  position:absolute; left:5px; font-size:10px; color:var(--ink-3);
+  white-space:nowrap; font-family:"IBM Plex Mono",monospace; letter-spacing:.02em;
+}
+.era-lab.a{top:30px} .era-lab.b{top:46px}
+.era-band-lab{
+  position:absolute; top:62px; font-size:10px; color:var(--ink-3); text-align:center;
+  white-space:nowrap; font-family:"IBM Plex Mono",monospace; transform:translateX(-50%);
+}
+.grid .tick{top:0}
+
+/* the era shading and year gridlines run the full height, behind the bars */
+.tl-body{position:relative}
+.grid{position:absolute; inset:0; z-index:0; pointer-events:none}
+.grid .inner{height:100%}
+.gen{border-bottom:1px solid var(--rule); position:relative; z-index:1}
+.gen:last-child{border-bottom:0}
+.gen-head{
+  display:flex; align-items:baseline; gap:10px; padding:12px 22px 4px 22px;
+}
+.gen-head b{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.gen-head i{font-style:normal; font-size:12px; color:var(--ink-3)}
+.row{position:relative; height:26px}
+.row:hover{background:color-mix(in srgb, var(--ink) 5%, transparent)}
+.row .nm{
+  position:absolute; left:22px; top:0; width:150px; height:26px; line-height:26px;
+  font-size:12.5px; color:var(--ink-2); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; padding-right:8px;
+}
+@media (max-width:640px){ .row .nm{width:104px; font-size:11.5px} }
+.row .inner{position:absolute; left:0; right:22px; top:0; height:26px; margin-left:180px}
+@media (max-width:640px){ .row .inner{margin-left:132px} }
+.bar{
+  position:absolute; top:8px; height:10px; border-radius:3px; min-width:3px;
+  box-shadow:0 0 0 2px var(--panel);
+}
+.bar.cz{background:var(--cz)} .bar.pl{background:var(--pl)}
+.bar.east{background:var(--east)}
+.bar.unk,.bar.oth{background:var(--unknown)}
+.bar.unk::after{
+  content:""; position:absolute; inset:0; border-radius:3px;
+  background:repeating-linear-gradient(135deg,transparent 0 3px,rgba(255,255,255,.45) 3px 5px);
+}
+.stub{position:absolute; top:6px; height:14px; width:3px; border-radius:2px}
+.stub.cz{background:var(--cz)} .stub.pl{background:var(--pl)}
+.stub.east{background:var(--east)}
+.stub.unk,.stub.oth{background:var(--unknown)}
+.openrun{position:absolute; top:12px; height:0; border-top:2px dotted var(--ink-3); opacity:.75}
+.living{position:absolute; top:11px; width:7px; height:7px; border-radius:50%; border:2px solid var(--panel)}
+.living.cz{background:var(--cz)} .living.pl{background:var(--pl)}
+.living.east{background:var(--east)}
+.living.unk,.living.oth{background:var(--unknown)}
+.nodate{
+  padding:2px 22px 12px; font-size:12px; color:var(--ink-3); line-height:1.5;
+}
+.nodate b{font-weight:500; color:var(--ink-3)}
+
+.you .nm{color:var(--ink); font-weight:600}
+
+/* --------------------------------------------------------------------- map */
+.map-panel{padding:18px 18px 12px}
+.map-scroll{overflow-x:auto}
+svg.map{display:block; width:100%; height:auto; min-width:560px}
+.mtxt{font-family:"IBM Plex Sans",sans-serif; font-size:12px; fill:var(--ink-2)}
+.mtxt.small{font-size:10.5px; fill:var(--ink-3)}
+.mtxt.ctry{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+  fill:var(--ink-3); text-transform:uppercase;
+}
+.place-lab{font-size:11.5px; fill:var(--ink); font-weight:500; paint-order:stroke; stroke:var(--panel); stroke-width:3px}
+.place-sub{font-size:9.5px; fill:var(--ink-3); paint-order:stroke; stroke:var(--panel); stroke-width:3px}
+.dot{cursor:pointer}
+.dot circle.approx{fill:none; stroke:var(--ink-3); stroke-width:1; stroke-dasharray:2.5 2.5; opacity:.65}
+.leader{stroke:var(--ink-3); stroke-width:1; fill:none; opacity:.5}
+.leader-dot{fill:var(--ink-3); opacity:.7}
+.dot circle{stroke:var(--panel); stroke-width:2}
+.inset-box{fill:var(--sunken); stroke:var(--rule); stroke-width:1}
+
+/* ----------------------------------------------------------------- tooltip */
+#tip{
+  position:fixed; z-index:99; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--panel); border:1px solid var(--rule-2); border-radius:8px;
+  box-shadow:var(--shadow); padding:9px 12px; max-width:280px; font-size:12.5px; line-height:1.45;
+}
+#tip.on{opacity:1}
+#tip .t-n{font-weight:600; margin-bottom:2px}
+#tip .t-y{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+#tip .t-m{color:var(--ink-3); font-size:11.5px; margin-top:3px}
+
+/* ------------------------------------------------------------------- table */
+details.tbl{margin-top:20px; border:1px solid var(--rule); border-radius:10px; background:var(--panel)}
+details.tbl summary{
+  cursor:pointer; padding:12px 16px; font-size:13px; color:var(--ink-2);
+  font-weight:500; list-style:none; display:flex; align-items:center; gap:8px;
+}
+details.tbl summary::-webkit-details-marker{display:none}
+details.tbl summary::before{content:"▸"; color:var(--ink-3); font-size:11px}
+details.tbl[open] summary::before{content:"▾"}
+details.tbl summary:focus-visible{outline:2px solid var(--cz); outline-offset:-2px; border-radius:10px}
+.tbl-scroll{overflow-x:auto; border-top:1px solid var(--rule)}
+table{border-collapse:collapse; width:100%; font-size:12.5px}
+th,td{text-align:left; padding:7px 16px; border-bottom:1px solid var(--rule); white-space:nowrap}
+th{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); font-weight:500}
+td.y{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+tr:last-child td{border-bottom:0}
+
+/* ------------------------------------------------------------------- notes */
+.notes{margin-top:56px; padding-top:28px; border-top:1px solid var(--rule)}
+.notes h3{font-family:Spectral,Georgia,serif; font-size:1.15rem; font-weight:600; margin:0 0 12px}
+.notes ul{margin:0; padding-left:18px; color:var(--ink-2); max-width:70ch}
+.notes li{margin-bottom:9px}
+.notes code{
+  font-family:"IBM Plex Mono",monospace; font-size:.9em; background:var(--sunken);
+  padding:1px 5px; border-radius:3px; color:var(--ink-2);
+}
+.flag{color:var(--pl); font-weight:500}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Ten generations · 1700 – 2026</p>
+  <h1>The Lengyel Line</h1>
+  <p class="standfirst">Czech Protestants who left Bohemia when their faith was outlawed, founded a town in Poland, farmed the Volhynian steppe for eighty years, sent a branch to the Canadian prairies — and came home to a borderland emptied by war.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <h2>Ten generations</h2>
+    <span class="num">Figure 01 · direct line only</span>
+  </div>
+  <p class="lede">Every direct ancestor in the file, oldest at the top. Each bar is one life, drawn birth to death on a shared scale. Colour is where that person was born — so the family's migration reads as a change of colour down the page.</p>
+
+  <ul class="legend">
+    <li><span class="sw" style="background:var(--cz)"></span>Born in the Czech lands</li>
+    <li><span class="sw" style="background:var(--pl)"></span>Born in Zelów &amp; Silesia</li>
+    <li><span class="sw" style="background:var(--east)"></span>Born in Volhynia &amp; the Black Sea</li>
+    <li><span class="sw" style="background:var(--unknown)"></span>Born elsewhere</li>
+    <li><span class="sw hatch" style="background:var(--unknown)"></span>Birthplace not recorded</li>
+    <li><span class="sw dash"></span>Death year not recorded</li>
+  </ul>
+
+  <div class="panel">
+    <div class="tl-scroll">
+      <div class="tl">
+        <div class="tl-axis"><div class="inner" id="axis"></div></div>
+        <div class="tl-body" id="tlbody"></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tbl">
+    <summary>Show the same 77 people as a table</summary>
+    <div class="tbl-scroll"><table id="ptable"></table></div>
+  </details>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>Where they lived and died</h2>
+    <span class="num">Figure 02 · all 860 people</span>
+  </div>
+  <p class="lede">Every birth, death and marriage in the file that can be placed on a map — 853 of them. Dots are sized by how many events happened there and coloured by the same three regions. Lines trace people who died somewhere other than where they were born; the thicker the line, the more people made that move.</p>
+
+  <ul class="legend">
+    <li><span class="sw" style="background:var(--cz);border-radius:50%;width:11px;height:11px"></span>Czech lands</li>
+    <li><span class="sw" style="background:var(--pl);border-radius:50%;width:11px;height:11px"></span>Zelów &amp; Silesia</li>
+    <li><span class="sw" style="background:var(--east);border-radius:50%;width:11px;height:11px"></span>Volhynia &amp; Black Sea</li>
+    <li><span class="sw" style="background:var(--dot-ink);border-radius:50%;width:11px;height:11px"></span>Canada</li>
+    <li><span style="font-size:11px;color:var(--ink-3)">○ dashed ring = position approximate</span></li>
+  </ul>
+
+  <div class="panel map-panel">
+    <div class="map-scroll"><svg class="map" id="euro" viewBox="0 0 900 716" role="img"
+      aria-label="Map of Central and Eastern Europe showing the family's settlements from Bohemia through Zelów to Volhynia."></svg></div>
+  </div>
+
+  <div class="sec-head" style="margin-top:34px">
+    <h2>The Canadian branch</h2>
+    <span class="num">Figure 03 · 1913 – 14</span>
+  </div>
+  <p class="lede">Twenty-four emigration records, every one of them dated 1913 or 1914 — the last two summers before the border closed. They landed on the Saskatchewan prairie and built a Czech Protestant church at Glenside.</p>
+  <div class="panel map-panel">
+    <div class="map-scroll"><svg class="map" id="canada" viewBox="0 0 700 268" role="img"
+      aria-label="Map of the Canadian prairies showing the family's settlements in Saskatchewan, Manitoba and British Columbia."></svg></div>
+    <p class="mtxt small" style="margin:2px 4px 4px; font-size:11px" id="offmap"></p>
+  </div>
+
+  <details class="tbl">
+    <summary>Show all mapped places as a table</summary>
+    <div class="tbl-scroll"><table id="mtable"></table></div>
+  </details>
+</section>
+
+<div class="notes">
+  <h3>What to trust, and what not to</h3>
+  <ul id="notes"></ul>
+</div>
+
+</div>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = {"people":[{"id":"I2","gen":0,"name":"David Lengyel","sex":"M","b":1982,"d":null,"bp":"Cheb","dp":"","region":"BOH"},{"id":"I1","gen":1,"name":"Miroslav Lengyel","sex":"M","b":1960,"d":null,"bp":"","dp":"","region":""},{"id":"I3","gen":1,"name":"Jana Liščuková","sex":"F","b":1961,"d":null,"bp":"Litoměřice","dp":"","region":"BOH"},{"id":"I6","gen":2,"name":"Oldřich Miroslav Lengyel","sex":"M","b":1936,"d":null,"bp":"Lučenec","dp":"","region":"OTH"},{"id":"I5","gen":2,"name":"Emílie Čadová","sex":"F","b":1938,"d":2024,"bp":"","dp":"","region":""},{"id":"I18","gen":2,"name":"Josef Liščuk","sex":"M","b":1926,"d":2003,"bp":"Český Háj","dp":"Lovosice","region":"VOL"},{"id":"I19","gen":2,"name":"Libuše Jeníkovská","sex":"F","b":1932,"d":null,"bp":"Mirotín","dp":"","region":"VOL"},{"id":"I500002","gen":3,"name":"Mikuláš Lengyel","sex":"M","b":1905,"d":1988,"bp":"","dp":"Olomouc","region":"MOR"},{"id":"I500181","gen":3,"name":"Anna Vopřadová","sex":"F","b":1901,"d":1995,"bp":"","dp":"Olomouc","region":"MOR"},{"id":"I500001","gen":3,"name":"Alois Čada","sex":"M","b":1911,"d":1981,"bp":"Lipník nad Bečvou","dp":"Bruntál","region":"MOR"},{"id":"I253","gen":3,"name":"Aloisie Machová","sex":"F","b":1914,"d":1992,"bp":"Vídeň","dp":"Bruntál","region":"OTH"},{"id":"I90","gen":3,"name":"Mikuláš Liščuk","sex":"M","b":1892,"d":1965,"bp":"Rivne","dp":"Velemín","region":"VOL"},{"id":"I91","gen":3,"name":"Alžběta Matějková","sex":"F","b":1891,"d":1976,"bp":"Michalovka","dp":"Velemín","region":"VOL"},{"id":"I84","gen":3,"name":"Vladimír Jeníkovský","sex":"M","b":1904,"d":1990,"bp":"Straklov","dp":"Litoměřice","region":"VOL"},{"id":"I85","gen":3,"name":"Alžběta Jelínková","sex":"F","b":1908,"d":1989,"bp":"Mirotín","dp":"Litoměřice","region":"VOL"},{"id":"I500531","gen":4,"name":"Josef Čada","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500530","gen":4,"name":"Mariana Tichá","sex":"F","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500568","gen":4,"name":"Alois Mach","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500569","gen":4,"name":"Marie Eisnerová","sex":"F","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500077","gen":4,"name":"Kalenik Leščuk","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500078","gen":4,"name":"Kateřina Longevičová","sex":"F","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500011","gen":4,"name":"Josef Matějka","sex":"M","b":1867,"d":1943,"bp":"Zelów","dp":"Mirotín","region":"SIL"},{"id":"I500012","gen":4,"name":"Amalie Němečková","sex":"F","b":1869,"d":1951,"bp":"Zelów","dp":"Šumperk","region":"SIL"},{"id":"I86","gen":4,"name":"Josef Jeníkovský","sex":"M","b":1871,"d":1949,"bp":"Smidary","dp":"Smidary","region":"BOH"},{"id":"I87","gen":4,"name":"Marie Varhaníková","sex":"F","b":1880,"d":1936,"bp":"Smidary","dp":"Mirotín","region":"BOH"},{"id":"I88","gen":4,"name":"Bedřich Jelínek","sex":"M","b":1891,"d":1933,"bp":"Kherson","dp":"Mirotín","region":"KHE"},{"id":"I89","gen":4,"name":"Marie Jelínková","sex":"F","b":1880,"d":1930,"bp":"","dp":"Mirotín","region":"VOL"},{"id":"I500079","gen":5,"name":"Josef Matějka","sex":"M","b":1841,"d":null,"bp":"Zelów","dp":"","region":"SIL"},{"id":"I500080","gen":5,"name":"Marie Tvrdá","sex":"F","b":1836,"d":null,"bp":"Zelów","dp":"","region":"SIL"},{"id":"I500081","gen":5,"name":"Jan Němeček","sex":"M","b":1846,"d":null,"bp":"","dp":"","region":""},{"id":"I500082","gen":5,"name":"Marie Tomešová","sex":"F","b":1848,"d":null,"bp":"","dp":"","region":""},{"id":"I500187","gen":5,"name":"František Jenikovský","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500185","gen":5,"name":"Josef Varhaník","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500186","gen":5,"name":"Žofie Varhaníková","sex":"F","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500059","gen":5,"name":"Karel Jelínek","sex":"M","b":1827,"d":null,"bp":"Zelów","dp":"","region":"SIL"},{"id":"I500060","gen":5,"name":"Žofie Jersáková","sex":"F","b":1828,"d":null,"bp":"","dp":"","region":""},{"id":"I500041","gen":5,"name":"Karel Jelínek","sex":"M","b":1857,"d":1926,"bp":"Zelów","dp":"Mirotín","region":"SIL"},{"id":"I500042","gen":5,"name":"Žofie Burianová","sex":"F","b":1863,"d":1938,"bp":"Čermín","dp":"Mirotín","region":"SIL"},{"id":"I500085","gen":6,"name":"Samuel Matějka","sex":"M","b":1795,"d":null,"bp":"Poland — other villages","dp":"","region":"SIL"},{"id":"I500086","gen":6,"name":"Marie Najmanová","sex":"F","b":1811,"d":1865,"bp":"Zelów","dp":"Zelów","region":"SIL"},{"id":"I500088","gen":6,"name":"Pavel Tvrdý","sex":"M","b":1807,"d":null,"bp":"","dp":"","region":""},{"id":"I500108","gen":6,"name":"Anna Petráková","sex":"F","b":1807,"d":null,"bp":"Čermín","dp":"","region":"SIL"},{"id":"I500193","gen":6,"name":"Pavel Němeček","sex":"M","b":1817,"d":null,"bp":"","dp":"","region":""},{"id":"I500194","gen":6,"name":"Marie Ditrichová","sex":"F","b":1819,"d":null,"bp":"","dp":"","region":""},{"id":"I500196","gen":6,"name":"Pavel Tomeš","sex":"M","b":1811,"d":1860,"bp":"Zelów","dp":"Zelów","region":"SIL"},{"id":"I500197","gen":6,"name":"Anna Marie Pospíšilová","sex":"F","b":1813,"d":1872,"bp":"Zelów","dp":"Zelów","region":"SIL"},{"id":"I500266","gen":6,"name":"Jan Jelínek","sex":"M","b":1790,"d":1857,"bp":"Čermín","dp":"","region":"SIL"},{"id":"I500267","gen":6,"name":"Anna Rozina Kulhánková","sex":"F","b":1792,"d":1843,"bp":"","dp":"","region":""},{"id":"I500268","gen":6,"name":"Jiří Jirsák","sex":"M","b":1775,"d":1848,"bp":"","dp":"","region":""},{"id":"I500269","gen":6,"name":"Žofie Pospíšilová","sex":"F","b":1800,"d":1833,"bp":"","dp":"","region":""},{"id":"I500052","gen":6,"name":"Fridrich Vilém Jelínek","sex":"M","b":1836,"d":1872,"bp":"Husinec","dp":"Michalovka","region":"SIL"},{"id":"I500053","gen":6,"name":"Anna Šarlota Valtová","sex":"F","b":1836,"d":1861,"bp":"Husinec","dp":"Zelów","region":"SIL"},{"id":"I500057","gen":6,"name":"Jan Burian","sex":"M","b":1824,"d":null,"bp":"Husinec","dp":"","region":"SIL"},{"id":"I500058","gen":6,"name":"Charlotta Kňourková","sex":"F","b":1831,"d":1913,"bp":"Poland — other villages","dp":"Mirotín","region":"SIL"},{"id":"I500253","gen":7,"name":"Pavel Najman","sex":"M","b":1783,"d":1831,"bp":"Čermín","dp":"Zelów","region":"SIL"},{"id":"I500254","gen":7,"name":"Kateřina Veverková","sex":"F","b":1775,"d":1855,"bp":"Čermín","dp":"Zelów","region":"SIL"},{"id":"I500198","gen":7,"name":"Josef Tvrdý","sex":"M","b":1764,"d":null,"bp":"Čermín","dp":"","region":"SIL"},{"id":"I500199","gen":7,"name":"Marie Kořínková","sex":"F","b":1769,"d":null,"bp":"Malý Friedrichův Tábor","dp":"","region":"SIL"},{"id":"I500337","gen":7,"name":"Jiří Pospíšil","sex":"M","b":1783,"d":null,"bp":"Poland — other villages","dp":"","region":"SIL"},{"id":"I500338","gen":7,"name":"Marie Jelínková","sex":"F","b":1787,"d":null,"bp":"Čermín","dp":"","region":"SIL"},{"id":"I500271","gen":7,"name":"Jan Jelínek","sex":"M","b":1756,"d":1824,"bp":"Velký Friedrichův Tábor","dp":"Zelów","region":"SIL"},{"id":"I500272","gen":7,"name":"Marie Pospíšilová","sex":"F","b":1765,"d":1821,"bp":"","dp":"","region":""},{"id":"I500273","gen":7,"name":"Václav Kulhánek","sex":"M","b":1755,"d":1826,"bp":"","dp":"","region":""},{"id":"I500274","gen":7,"name":"Johana Hejtmánková","sex":"F","b":1754,"d":1814,"bp":"","dp":"","region":""},{"id":"I500275","gen":7,"name":"Jan Jirsák","sex":"M","b":1747,"d":1826,"bp":"Poland — other villages","dp":"Zelów","region":"SIL"},{"id":"I500276","gen":7,"name":"Marie Nevečeřalová","sex":"F","b":1754,"d":1832,"bp":"Velký Friedrichův Tábor","dp":"Zelów","region":"SIL"},{"id":"I500277","gen":7,"name":"Jan Pospíšil","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500366","gen":8,"name":"Jiří Najman (rozený Neumann)","sex":"M","b":1757,"d":1831,"bp":"Velký Friedrichův Tábor","dp":"Zelów","region":"SIL"},{"id":"I500367","gen":8,"name":"Alžběta Kupcová","sex":"F","b":1758,"d":1814,"bp":"Velký Friedrichův Tábor","dp":"Zelów","region":"SIL"},{"id":"I500487","gen":8,"name":"Václav Jirsák","sex":"M","b":1715,"d":1793,"bp":"Hradec Králové","dp":"Malý Friedrichův Tábor","region":"BOH"},{"id":"I500488","gen":8,"name":"Kateřina","sex":"F","b":1723,"d":1785,"bp":"","dp":"Malý Friedrichův Tábor","region":"SIL"},{"id":"I500546","gen":8,"name":"Jan Nevečeřal","sex":"M","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500514","gen":9,"name":"Josef Najman","sex":"M","b":1703,"d":1764,"bp":"Hradec Králové","dp":"Velký Friedrichův Tábor","region":"BOH"},{"id":"I500515","gen":9,"name":"Anna Kořínková","sex":"F","b":1734,"d":1793,"bp":"Čermín","dp":"Čermín","region":"SIL"},{"id":"I500542","gen":9,"name":"Jan Kupec","sex":"M","b":1730,"d":1789,"bp":"Velký Friedrichův Tábor","dp":"Velký Friedrichův Tábor","region":"SIL"},{"id":"I500584","gen":9,"name":"Alžběta ?","sex":"F","b":null,"d":null,"bp":"","dp":"","region":""},{"id":"I500651","gen":10,"name":"Dorota Maršová","sex":"F","b":1700,"d":1765,"bp":"","dp":"","region":""}],"places":[{"label":"Mirotín","modern":"Myrotyn, Rivne obl., Ukraine","lat":50.45,"lon":26.135,"region":"VOL","approx":true,"n":151},{"label":"Zelów","modern":"Zelów, Łódź, Poland","lat":51.466,"lon":19.221,"region":"SIL","approx":false,"n":113},{"label":"Lovosice","modern":"Lovosice, Czechia","lat":50.515,"lon":14.05,"region":"BOH","approx":false,"n":47},{"label":"Lipník nad Bečvou","modern":"Lipník n. Bečvou, Czechia","lat":49.527,"lon":17.586,"region":"MOR","approx":false,"n":32},{"label":"Velký Friedrichův Tábor","modern":"Tabor Wielki, Poland","lat":51.302,"lon":17.752,"region":"SIL","approx":true,"n":30},{"label":"Litoměřice","modern":"Litoměřice, Czechia","lat":50.534,"lon":14.132,"region":"BOH","approx":false,"n":29},{"label":"Beroun","modern":"Beroun, Czechia","lat":49.964,"lon":14.072,"region":"BOH","approx":false,"n":24},{"label":"Michalovka","modern":"Mykhailivka, Rivne obl., Ukraine","lat":50.47,"lon":26.19,"region":"VOL","approx":true,"n":24},{"label":"Rivne","modern":"Rivne, Ukraine","lat":50.619,"lon":26.251,"region":"VOL","approx":false,"n":22},{"label":"Glenside","modern":"Glenside, Saskatchewan","lat":51.437,"lon":-106.63,"region":"CAN","approx":false,"n":22},{"label":"Čermín","modern":"Czermin, Poland","lat":51.325,"lon":17.7,"region":"SIL","approx":true,"n":19},{"label":"Poland — other villages","modern":"scattered, Łódź / Wielkopolska","lat":51.9,"lon":18.4,"region":"SIL","approx":true,"n":18},{"label":"Olomouc","modern":"Olomouc, Czechia","lat":49.594,"lon":17.251,"region":"MOR","approx":false,"n":15},{"label":"Marienberg","modern":"Mykolaiv obl., Ukraine","lat":47.72,"lon":30.29,"region":"KHE","approx":true,"n":14},{"label":"Minitonas","modern":"Minitonas, Manitoba","lat":52.073,"lon":-101.03,"region":"CAN","approx":false,"n":13},{"label":"Volhynia (unspecified)","modern":"Ukraine","lat":50.62,"lon":26.25,"region":"VOL","approx":true,"n":13},{"label":"Outlook","modern":"Outlook, Saskatchewan","lat":51.497,"lon":-107.052,"region":"CAN","approx":false,"n":13},{"label":"Vancouver","modern":"Vancouver area, BC","lat":49.283,"lon":-123.121,"region":"CAN","approx":false,"n":12},{"label":"Český Háj","modern":"Rivne obl., Ukraine","lat":50.33,"lon":26.52,"region":"VOL","approx":true,"n":10},{"label":"Canada (unspecified)","modern":"Canada","lat":51.44,"lon":-106.63,"region":"CAN","approx":true,"n":10},{"label":"Husinec","modern":"Poland (Kępno area)","lat":51.29,"lon":17.85,"region":"SIL","approx":true,"n":10},{"label":"Odessa","modern":"Odesa, Ukraine","lat":46.482,"lon":30.723,"region":"KHE","approx":false,"n":10},{"label":"Bruntál","modern":"Bruntál, Czechia","lat":49.988,"lon":17.465,"region":"MOR","approx":false,"n":9},{"label":"Šumperk","modern":"Šumperk area, Czechia","lat":49.965,"lon":16.971,"region":"MOR","approx":false,"n":8},{"label":"Sulejovice","modern":"Sulejovice, Czechia","lat":50.492,"lon":14.02,"region":"BOH","approx":false,"n":8},{"label":"Central Bohemia","modern":"villages nr. Kolín & Beroun","lat":50.028,"lon":15.2,"region":"BOH","approx":true,"n":8},{"label":"Cheb","modern":"Cheb, Czechia","lat":50.079,"lon":12.37,"region":"BOH","approx":false,"n":7},{"label":"Kherson","modern":"Kherson, Ukraine","lat":46.635,"lon":32.616,"region":"KHE","approx":false,"n":7},{"label":"Bohemka","modern":"Mykolaiv obl., Ukraine","lat":47.83,"lon":30.6,"region":"KHE","approx":true,"n":7},{"label":"Prostějov","modern":"Prostějov, Czechia","lat":49.472,"lon":17.107,"region":"MOR","approx":false,"n":7},{"label":"Praha","modern":"Prague, Czechia","lat":50.075,"lon":14.437,"region":"BOH","approx":false,"n":6},{"label":"Toronto","modern":"Ontario, Canada","lat":43.653,"lon":-79.383,"region":"CAN","approx":false,"n":6},{"label":"Smidary","modern":"Smidary, Czechia","lat":50.283,"lon":15.5,"region":"BOH","approx":false,"n":5},{"label":"Velemín","modern":"Velemín, Czechia","lat":50.545,"lon":13.955,"region":"BOH","approx":false,"n":5},{"label":"Svatá Helena","modern":"Sfânta Elena, Romania","lat":44.65,"lon":21.72,"region":"OTH","approx":false,"n":5},{"label":"Uherské Hradiště","modern":"Uherské Hradiště, Czechia","lat":49.07,"lon":17.46,"region":"MOR","approx":false,"n":5},{"label":"Jadvipol","modern":"Rivne obl., Ukraine","lat":50.59,"lon":26.18,"region":"VOL","approx":true,"n":5},{"label":"Poland (unspecified)","modern":"Poland","lat":51.47,"lon":19.22,"region":"SIL","approx":true,"n":5},{"label":"Malý Friedrichův Tábor","modern":"Tabor Mały, Poland","lat":51.29,"lon":17.78,"region":"SIL","approx":true,"n":5},{"label":"Syców","modern":"Syców, Poland","lat":51.297,"lon":17.717,"region":"SIL","approx":false,"n":5},{"label":"Namysłów","modern":"Namysłów area, Poland","lat":51.075,"lon":17.7,"region":"SIL","approx":true,"n":5},{"label":"Most","modern":"Most, Czechia","lat":50.503,"lon":13.636,"region":"BOH","approx":false,"n":4},{"label":"Straklov","modern":"Rivne obl., Ukraine","lat":50.4,"lon":25.9,"region":"VOL","approx":true,"n":4},{"label":"Keblice","modern":"Keblice, Czechia","lat":50.48,"lon":14.07,"region":"BOH","approx":false,"n":4},{"label":"Czechia (unspecified)","modern":"Czechia","lat":50.08,"lon":14.44,"region":"BOH","approx":true,"n":4},{"label":"Dombrovka (Bashkiria)","modern":"Bashkortostan, Russia","lat":54.9,"lon":54.5,"region":"OTH","approx":true,"n":4},{"label":"Winnipeg","modern":"Winnipeg, Manitoba","lat":49.895,"lon":-97.138,"region":"CAN","approx":false,"n":4},{"label":"Saskatoon","modern":"Saskatoon, Saskatchewan","lat":52.134,"lon":-106.647,"region":"CAN","approx":false,"n":4},{"label":"Chomutov","modern":"Chomutov, Czechia","lat":50.46,"lon":13.418,"region":"BOH","approx":false,"n":3},{"label":"Starý Jičín","modern":"Starý Jičín, Czechia","lat":49.573,"lon":17.965,"region":"MOR","approx":true,"n":3},{"label":"Luck","modern":"Lutsk, Ukraine","lat":50.747,"lon":25.325,"region":"VOL","approx":true,"n":3},{"label":"Swan River","modern":"Swan River, Manitoba","lat":52.106,"lon":-101.267,"region":"CAN","approx":false,"n":3},{"label":"Dembrovka","modern":"Volhynia, Ukraine","lat":50.6,"lon":26.0,"region":"VOL","approx":true,"n":3},{"label":"Liberec","modern":"Liberec, Czechia","lat":50.767,"lon":15.056,"region":"BOH","approx":false,"n":3},{"label":"Žytomyr obl.","modern":"Zhytomyr obl., Ukraine","lat":50.25,"lon":28.66,"region":"VOL","approx":true,"n":3},{"label":"Medicine Hat","modern":"Alberta, Canada","lat":50.041,"lon":-110.677,"region":"CAN","approx":false,"n":3},{"label":"Hradec Králové","modern":"Hradec Králové, Czechia","lat":50.209,"lon":15.832,"region":"BOH","approx":false,"n":3},{"label":"Ústí nad Labem","modern":"Ústí n. Labem, Czechia","lat":50.661,"lon":14.032,"region":"BOH","approx":false,"n":2},{"label":"Dubno","modern":"Dubno, Ukraine","lat":50.417,"lon":25.751,"region":"VOL","approx":true,"n":2},{"label":"Kleszczów","modern":"Kleszczów, Poland","lat":51.207,"lon":19.298,"region":"SIL","approx":false,"n":2},{"label":"Krym","modern":"Crimea","lat":45.3,"lon":34.4,"region":"OTH","approx":true,"n":2},{"label":"Black Sea steppe","modern":"Ukraine","lat":46.9,"lon":31.0,"region":"KHE","approx":true,"n":2},{"label":"Kyiv obl.","modern":"Kyiv obl., Ukraine","lat":50.45,"lon":30.523,"region":"OTH","approx":false,"n":2},{"label":"Galicia","modern":"Galicia (Austria-Hungary)","lat":49.85,"lon":22.68,"region":"OTH","approx":true,"n":2},{"label":"Lučenec","modern":"Lučenec, Slovakia","lat":48.331,"lon":19.667,"region":"OTH","approx":false,"n":1},{"label":"Hořovice","modern":"Hořovice, Czechia","lat":49.836,"lon":13.902,"region":"BOH","approx":false,"n":1},{"label":"Vídeň","modern":"Vienna, Austria","lat":48.208,"lon":16.373,"region":"OTH","approx":false,"n":1},{"label":"Brno","modern":"Brno, Czechia","lat":49.195,"lon":16.608,"region":"MOR","approx":false,"n":1},{"label":"Opava","modern":"Opava, Czechia","lat":49.938,"lon":17.903,"region":"MOR","approx":false,"n":1},{"label":"Mauthausen","modern":"Mauthausen, Austria","lat":48.244,"lon":14.522,"region":"OTH","approx":false,"n":1},{"label":"Jílové u Děčína","modern":"Jílové, Czechia","lat":50.76,"lon":14.1,"region":"BOH","approx":false,"n":1},{"label":"Columbus, Ohio","modern":"Ohio, United States","lat":39.961,"lon":-82.999,"region":"OTH","approx":false,"n":1},{"label":"Teplice","modern":"Teplice, Czechia","lat":50.64,"lon":13.825,"region":"BOH","approx":false,"n":1},{"label":"Friedrichův Hradec","modern":"Poland","lat":51.31,"lon":17.74,"region":"SIL","approx":true,"n":1},{"label":"Zdolbuniv","modern":"Zdolbuniv, Ukraine","lat":50.52,"lon":26.243,"region":"VOL","approx":false,"n":1},{"label":"Oregon","modern":"Oregon, United States","lat":45.52,"lon":-122.68,"region":"OTH","approx":true,"n":1},{"label":"Regina","modern":"Regina, Saskatchewan","lat":50.445,"lon":-104.619,"region":"CAN","approx":false,"n":1},{"label":"Prince Rupert","modern":"Prince Rupert, BC","lat":54.312,"lon":-130.32,"region":"CAN","approx":false,"n":1},{"label":"Františkovy Lázně","modern":"Františkovy Lázně, Czechia","lat":50.121,"lon":12.352,"region":"BOH","approx":false,"n":1}],"flows":[{"from":"Mirotín","to":"Lovosice","n":14},{"from":"Mirotín","to":"Litoměřice","n":12},{"from":"Velký Friedrichův Tábor","to":"Zelów","n":9},{"from":"Poland — other villages","to":"Zelów","n":6},{"from":"Zelów","to":"Glenside","n":6},{"from":"Odessa","to":"Outlook","n":6},{"from":"Poland — other villages","to":"Mirotín","n":5},{"from":"Volhynia (unspecified)","to":"Mirotín","n":5},{"from":"Marienberg","to":"Glenside","n":5},{"from":"Mirotín","to":"Toronto","n":4},{"from":"Mirotín","to":"Minitonas","n":4},{"from":"Čermín","to":"Zelów","n":4},{"from":"Mirotín","to":"Canada (unspecified)","n":3},{"from":"Zelów","to":"Mirotín","n":3},{"from":"Jadvipol","to":"Lovosice","n":3},{"from":"Mirotín","to":"Swan River","n":3},{"from":"Poland (unspecified)","to":"Mirotín","n":3},{"from":"Zelów","to":"Litoměřice","n":3},{"from":"Minitonas","to":"Winnipeg","n":3},{"from":"Minitonas","to":"Vancouver","n":3},{"from":"Central Bohemia","to":"Glenside","n":3},{"from":"Namysłów","to":"Zelów","n":3},{"from":"Český Háj","to":"Lovosice","n":2},{"from":"Straklov","to":"Litoměřice","n":2},{"from":"Rivne","to":"Velemín","n":2},{"from":"Mirotín","to":"Keblice","n":2},{"from":"Zelów","to":"Šumperk","n":2},{"from":"Michalovka","to":"Lovosice","n":2},{"from":"Michalovka","to":"Litoměřice","n":2},{"from":"Michalovka","to":"Šumperk","n":2},{"from":"Mirotín","to":"Šumperk","n":2},{"from":"Uherské Hradiště","to":"Lipník nad Bečvou","n":2},{"from":"Rivne","to":"Sulejovice","n":2},{"from":"Husinec","to":"Michalovka","n":2},{"from":"Mirotín","to":"Sulejovice","n":2},{"from":"Rivne","to":"Lovosice","n":2},{"from":"Zelów","to":"Volhynia (unspecified)","n":2},{"from":"Michalovka","to":"Rivne","n":2},{"from":"Michalovka","to":"Mirotín","n":2},{"from":"Michalovka","to":"Sulejovice","n":2},{"from":"Svatá Helena","to":"Cheb","n":2},{"from":"Žytomyr obl.","to":"Lovosice","n":2},{"from":"Michalovka","to":"Minitonas","n":2},{"from":"Odessa","to":"Glenside","n":2},{"from":"Bohemka","to":"Glenside","n":2},{"from":"Outlook","to":"Saskatoon","n":2},{"from":"Kyiv obl.","to":"Vancouver","n":2},{"from":"Glenside","to":"Vancouver","n":2}],"regions":{"BOH":"Bohemia","MOR":"Moravia & Silesia (CZ)","SIL":"Zelów & Silesia (PL)","VOL":"Volhynia","KHE":"Kherson & Black Sea","CAN":"Canada","OTH":"Elsewhere"},"stats":{"individuals":860,"families":265,"direct_line":77,"generations":10,"placed_refs":853,"unplaced_refs":2,"unplaced_distinct":2,"line_missing_birth":12,"line_missing_death":33,"approx_places":29}};
+/* ------------------------------------------------------------ shared bits */
+const STATION = {BOH:"cz", MOR:"cz", SIL:"pl", VOL:"east", KHE:"east", CAN:"can", OTH:"unk", "":"unk"};
+const STATION_NAME = {cz:"Czech lands", pl:"Zelów & Silesia", east:"Volhynia & the Black Sea", can:"Canada", unk:"elsewhere / not recorded"};
+const tip = document.getElementById("tip");
+function showTip(html, e){
+  tip.innerHTML = html; tip.classList.add("on");
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width  > innerWidth  - 8) x = e.clientX - r.width  - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = Math.max(8,x)+"px"; tip.style.top = Math.max(8,y)+"px";
+}
+function hideTip(){ tip.classList.remove("on"); }
+function kin(g){
+  if (g===0) return "you";
+  if (g===1) return "your parent";
+  if (g===2) return "your grandparent";
+  if (g===3) return "your great-grandparent";
+  return "your " + (g-2) + "× great-grandparent";
+}
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+/* ------------------------------------------------------------------ stats */
+{
+  const s = DATA.stats;
+  document.getElementById("stats").innerHTML = [
+    [s.individuals, "people in the file"],
+    [s.direct_line, "direct ancestors"],
+    [s.generations, "generations back"],
+    ["1700", "earliest birth"],
+    [DATA.places.length, "places mapped"],
+  ].map(([v,l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+
+/* --------------------------------------------------------------- timeline */
+const Y0 = 1690, Y1 = 2035, YSPAN = Y1 - Y0;
+const px = y => ((y - Y0) / YSPAN) * 100;
+const NOW = 2026;
+
+const BANDS = [[1914,1918,"1914–18"],[1939,1945,"1939–45"]];
+const MARKS = [[1781,"Toleration Patent"],[1802,"Zelów founded"],[1868,"East to Volhynia"],
+               [1913,"To Canada"],[1947,"Repatriation"]];
+
+/* the shading, the dashed event lines and the year gridlines are drawn twice:
+   once in the axis with their labels, once behind the bars at full height. */
+function scaleLayer(withLabels){
+  let h = "";
+  for (const [a,b,lab] of BANDS) {
+    h += `<div class="era" style="left:${px(a)}%;width:${px(b)-px(a)}%"></div>`;
+    if (withLabels)
+      h += `<div class="era-band-lab" style="left:${(px(a)+px(b))/2}%">${lab}</div>`;
+  }
+  MARKS.forEach(([y,lab],i) => {
+    h += `<div class="era-line" style="left:${px(y)}%">`
+       + (withLabels ? `<span class="era-lab ${i%2?"b":"a"}">${lab}</span>` : "")
+       + `</div>`;
+  });
+  for (let y = 1700; y <= 2000; y += 50)
+    h += `<div class="tick" style="left:${px(y)}%">${withLabels?`<b>${y}</b>`:""}</div>`;
+  return h;
+}
+document.getElementById("axis").innerHTML = scaleLayer(true);
+
+{
+  const byGen = {};
+  for (const p of DATA.people) (byGen[p.gen] ||= []).push(p);
+  const gens = Object.keys(byGen).map(Number).sort((a,b) => b - a);
+  let h = `<div class="grid"><div class="inner">${scaleLayer(false)}</div></div>`;
+  for (const g of gens) {
+    const all = byGen[g];
+    const dated   = all.filter(p => p.b).sort((a,b) => a.b - b.b);
+    const undated = all.filter(p => !p.b);
+    h += `<div class="gen"><div class="gen-head"><b>Generation ${g}</b><i>${kin(g)}${all.length>1?"s":""} · ${all.length}</i></div>`;
+    for (const p of dated) {
+      const st = STATION[p.region] || "unk";
+      const cls = (st === "cz" || st === "pl" || st === "east") ? st
+                : p.bp ? "oth" : "unk";
+      const living = !p.d && p.b >= 1930;
+      const end = p.d || (living ? NOW : null);
+      let mark;
+      if (end) {
+        const w = Math.max(px(end) - px(p.b), 0.35);
+        mark = `<div class="bar ${cls}" style="left:${px(p.b)}%;width:${w}%"></div>`;
+        if (living) mark += `<div class="living ${cls}" style="left:calc(${px(end)}% - 3px)"></div>`;
+      } else {
+        mark = `<div class="stub ${cls}" style="left:${px(p.b)}%"></div>`
+             + `<div class="openrun" style="left:calc(${px(p.b)}% + 4px);width:2.6%"></div>`;
+      }
+      const years = p.b + "–" + (p.d ? p.d : living ? "living" : "?");
+      const place = p.bp ? esc(p.bp) : "birthplace not recorded";
+      const meta = `${kin(p.gen)} · born in ${place}`
+                 + (!p.d && !living ? " · death year not recorded" : "");
+      h += `<div class="row${p.gen===0?" you":""}" data-tip="${esc(p.name)}|${years}|${esc(meta)}">`
+         + `<div class="nm">${esc(p.name)}</div><div class="inner">${mark}</div></div>`;
+    }
+    if (undated.length)
+      h += `<div class="nodate"><b>No dates recorded:</b> ${undated.map(p => esc(p.name)).join(", ")}</div>`;
+    h += `</div>`;
+  }
+  const body = document.getElementById("tlbody");
+  body.innerHTML = h;
+  body.addEventListener("mousemove", e => {
+    const row = e.target.closest("[data-tip]");
+    if (!row) return hideTip();
+    const [n,y,m] = row.dataset.tip.split("|");
+    showTip(`<div class="t-n">${n}</div><div class="t-y">${y}</div><div class="t-m">${m}</div>`, e);
+  });
+  body.addEventListener("mouseleave", hideTip);
+}
+
+/* ----------------------------------------------------------- people table */
+{
+  const rows = DATA.people.slice().sort((a,b) => a.gen - b.gen || (a.b||9999) - (b.b||9999));
+  document.getElementById("ptable").innerHTML =
+    `<thead><tr><th>Generation</th><th>Name</th><th>Born</th><th>Died</th><th>Birthplace</th><th>Region</th></tr></thead><tbody>`
+    + rows.map(p => `<tr><td class="y">${p.gen}</td><td>${esc(p.name)}</td><td class="y">${p.b||"—"}</td>`
+      + `<td class="y">${p.d || (!p.d && p.b >= 1930 ? "living" : "—")}</td>`
+      + `<td>${p.bp ? esc(p.bp) : "—"}</td><td>${STATION_NAME[STATION[p.region]||"unk"]}</td></tr>`).join("")
+    + `</tbody>`;
+}
+
+/* -------------------------------------------------------------------- map */
+const CZ=[[12.09,50.25],[12.50,50.40],[13.05,50.50],[13.60,50.73],[14.40,51.05],[14.82,50.87],[15.02,51.02],[15.40,50.80],[16.00,50.65],[16.32,50.66],[16.65,50.10],[16.42,50.32],[16.90,50.45],[17.72,50.30],[18.30,49.92],[18.85,49.52],[18.55,49.32],[18.15,49.25],[17.75,48.87],[17.20,48.87],[16.95,48.62],[16.50,48.78],[16.05,48.75],[15.20,48.95],[14.70,48.58],[14.05,48.60],[13.83,48.77],[13.40,49.05],[12.60,49.42],[12.40,49.75],[12.10,50.10]];
+const PL=[[14.27,53.95],[14.60,54.10],[15.20,54.35],[16.20,54.55],[17.50,54.75],[18.40,54.72],[18.65,54.45],[19.05,54.40],[19.65,54.45],[20.60,54.42],[22.80,54.37],[23.50,54.15],[23.90,53.00],[23.50,52.60],[23.62,52.10],[23.20,52.25],[23.65,51.50],[23.90,51.00],[24.15,50.85],[23.70,50.40],[22.70,49.55],[22.90,49.00],[22.55,49.09],[21.60,49.42],[20.90,49.30],[20.10,49.18],[19.80,49.20],[19.45,49.60],[18.85,49.52],[18.30,49.92],[17.72,50.30],[16.90,50.45],[16.42,50.32],[16.65,50.10],[16.32,50.66],[16.00,50.65],[15.40,50.80],[15.02,51.02],[14.82,50.87],[14.40,51.05],[14.95,51.35],[14.75,52.07],[14.55,52.62],[14.15,52.85],[14.40,53.25],[14.28,53.70]];
+const UA=[[23.65,51.50],[24.30,51.90],[25.30,51.92],[26.50,51.80],[27.70,51.75],[28.75,51.55],[29.30,51.40],[30.55,51.40],[31.20,52.05],[32.30,52.10],[33.20,52.35],[34.20,51.70],[34.40,51.25],[35.40,50.40],[36.60,50.35],[37.45,50.40],[38.20,49.95],[40.10,49.60],[40.20,49.25],[39.80,48.80],[39.90,48.30],[38.90,47.85],[38.30,47.60],[37.55,47.10],[36.60,46.60],[35.55,46.60],[35.10,45.75],[34.60,45.90],[35.30,45.30],[33.60,45.32],[32.55,45.35],[33.55,45.90],[33.65,46.20],[32.90,46.35],[32.20,46.50],[31.50,46.62],[30.75,46.48],[30.20,45.85],[29.65,45.35],[28.70,45.20],[28.20,45.45],[28.50,46.40],[29.20,46.55],[29.60,46.90],[29.20,47.45],[27.55,48.45],[26.60,48.25],[25.20,47.90],[24.90,47.72],[24.20,47.90],[23.10,48.10],[22.15,48.42],[22.55,49.09],[22.90,49.00],[22.70,49.55],[23.70,50.40],[24.15,50.85],[23.90,51.00]];
+const BALTIC=[[11.5,55.5],[11.5,54.35],[12.40,54.42],[13.40,54.60],[14.27,53.95],[14.60,54.10],[15.20,54.35],[16.20,54.55],[17.50,54.75],[18.40,54.72],[18.65,54.45],[19.05,54.40],[19.65,54.45],[20.60,54.42],[21.10,55.20],[21.00,55.50]];
+const BLACK=[[28.55,44.0],[28.70,45.20],[29.65,45.35],[30.20,45.85],[30.75,46.48],[31.50,46.62],[32.20,46.50],[32.90,46.35],[33.65,46.20],[33.65,44.0]];
+
+const LON0=11.5, LAT1=55.5, MX=39.853, MY=62;
+/* label anchors in SVG px, chosen to sit in the empty parts of the map */
+const CLUSTERS = [
+  {label:"Lovosice & Litoměřice", sub:"where the Volhynian Czechs were resettled, 1947",
+   lon:14.09, lat:50.51, lx:16,  ly:222, anchor:"start"},
+  {label:"Beroun",                sub:"",
+   lon:14.07, lat:49.96, lx:16,  ly:340, anchor:"start"},
+  {label:"Lipník nad Bečvou",     sub:"",
+   lon:17.59, lat:49.53, lx:232, ly:500, anchor:"start"},
+  {label:"Friedrichův Tábor · Čermín · Husinec", sub:"the Silesian exile villages, from 1749",
+   lon:17.77, lat:51.30, lx:262, ly:120, anchor:"start"},
+  {label:"Zelów",                 sub:"founded by Czech exiles, 1802",
+   lon:19.22, lat:51.47, lx:430, ly:186, anchor:"start"},
+  {label:"Mirotín & the Volhynian villages", sub:"Myrotyn, Rivne obl., Ukraine",
+   lon:26.19, lat:50.47, lx:626, ly:196, anchor:"start"},
+  {label:"Marienberg & Bohemka",  sub:"the Black Sea colonies",
+   lon:30.45, lat:47.78, lx:596, ly:614, anchor:"start"},
+  {label:"Odessa",                sub:"Odesa, Ukraine",
+   lon:30.72, lat:46.48, lx:872, ly:596, anchor:"end"},
+];
+const mx = lon => (lon - LON0) * MX;
+const my = lat => (LAT1 - lat) * MY;
+const path = pts => pts.map((p,i) => (i?"L":"M") + mx(p[0]).toFixed(1) + " " + my(p[1]).toFixed(1)).join(" ");
+
+function dotColor(region){
+  const st = STATION[region] || "unk";
+  return st === "can" ? "var(--dot-ink)"
+       : st === "unk" ? "var(--unknown)"
+       : "var(--" + st + ")";
+}
+const radius = n => Math.min(19, 2.4 + Math.sqrt(n) * 1.32);
+
+{
+  const svg = document.getElementById("euro");
+  const byLabel = Object.fromEntries(DATA.places.map(p => [p.label, p]));
+  const euro = DATA.places.filter(p => p.region !== "CAN" && p.lon > 11 && p.lon < 34 && p.lat > 43.5 && p.lat < 56);
+  let s = "";
+
+  s += `<defs><clipPath id="cf"><rect x="0" y="0" width="900" height="716"/></clipPath>
+        <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M0 0 L8 4 L0 8 z" fill="var(--ink-3)" opacity=".7"/></marker></defs>`;
+  s += `<g clip-path="url(#cf)">`;
+  s += `<rect x="0" y="0" width="900" height="716" fill="var(--land)"/>`;
+  s += `<path d="${path(BALTIC)}Z" fill="var(--sea)"/><path d="${path(BLACK)}Z" fill="var(--sea)"/>`;
+  for (const c of [PL, UA, CZ])
+    s += `<path d="${path(c)}Z" fill="var(--land-2)" stroke="var(--rule-2)" stroke-width="1"/>`;
+
+  // country labels, placed away from the dot clusters
+  const ctry = [[12.95,49.05,"Bohemia"],[19.9,52.6,"Poland"],[29.6,49.6,"Ukraine"],[12.4,52.9,"Germany"],[19.6,48.6,"Slovakia"],[14.6,47.6,"Austria"],[23.4,45.4,"Romania"],[27.9,52.9,"Belarus"],[29.3,44.6,"Black Sea"],[16.6,55.0,"Baltic Sea"]];
+  for (const [lo,la,nm] of ctry)
+    s += `<text class="mtxt ctry" x="${mx(lo).toFixed(1)}" y="${my(la).toFixed(1)}">${nm}</text>`;
+
+  // migration arcs
+  for (const f of DATA.flows) {
+    const a = byLabel[f.from], b = byLabel[f.to];
+    if (!a || !b || f.n < 3) continue;
+    if (a.region === "CAN" || b.region === "CAN") continue;
+    const x1 = mx(a.lon), y1 = my(a.lat), x2 = mx(b.lon), y2 = my(b.lat);
+    const dx = x2 - x1, dy = y2 - y1, d = Math.hypot(dx, dy);
+    if (d < 6) continue;
+    const cx = (x1+x2)/2 - dy * 0.16, cy = (y1+y2)/2 + dx * 0.16;
+    s += `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}"`
+       + ` fill="none" stroke="var(--ink-3)" stroke-width="${(0.7 + f.n*0.16).toFixed(2)}"`
+       + ` opacity=".55" marker-end="url(#ah)"/>`;
+  }
+
+  // dots, largest first so small ones stay clickable on top
+  for (const p of euro.slice().sort((a,b) => b.n - a.n)) {
+    const r = radius(p.n);
+    s += `<g class="dot" data-tip="${esc(p.label)}|${p.n}|${esc(p.modern)}|${p.approx?1:0}">`
+       + `<circle cx="${mx(p.lon).toFixed(1)}" cy="${my(p.lat).toFixed(1)}" r="${r.toFixed(1)}"`
+       + ` fill="${dotColor(p.region)}" fill-opacity=".82"/>`
+       + (p.approx ? `<circle class="approx" cx="${mx(p.lon).toFixed(1)}" cy="${my(p.lat).toFixed(1)}"`
+                   + ` r="${(r+3).toFixed(1)}"/>` : "")
+       + `</g>`;
+  }
+  /* Several of these villages sit within a few kilometres of each other and
+     land on the same pixel, so they are annotated as clusters with a leader
+     line rather than labelled one by one. Every individual dot still hovers. */
+  for (const c of CLUSTERS) {
+    const dx = mx(c.lon), dy = my(c.lat);
+    const end = c.anchor === "end" ? c.lx + 4 : c.lx - 4;
+    s += `<path class="leader" d="M${end} ${c.ly - 4} L${dx.toFixed(1)} ${dy.toFixed(1)}"/>`
+       + `<circle class="leader-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="1.8"/>`
+       + `<text class="place-lab" text-anchor="${c.anchor}" x="${c.lx}" y="${c.ly}">${esc(c.label)}</text>`
+       + (c.sub ? `<text class="place-sub" text-anchor="${c.anchor}" x="${c.lx}" y="${c.ly + 12}">${esc(c.sub)}</text>` : "");
+  }
+  s += `</g>`;
+  svg.innerHTML = s;
+  wireDots(svg);
+}
+
+/* ------------------------------------------------------------ canada inset */
+{
+  const svg = document.getElementById("canada");
+  const CLON0 = -132, CLAT1 = 55.6, CX = 18.7, CY = 30;
+  const cx = lon => (lon - CLON0) * CX, cy = lat => (CLAT1 - lat) * CY;
+  const can = DATA.places.filter(p => p.region === "CAN" && p.lon > CLON0 && p.lon < -95 && p.lat > 47.5);
+  let s = `<rect x="0" y="0" width="700" height="268" fill="var(--land)"/>`;
+  // 49th parallel and the straight prairie boundaries
+  s += `<line x1="0" y1="${cy(49)}" x2="700" y2="${cy(49)}" stroke="var(--rule-2)" stroke-width="1.4"/>`;
+  s += `<rect x="0" y="${cy(49)}" width="700" height="${268-cy(49)}" fill="var(--sunken)"/>`;
+  for (const lon of [-120, -110, -101.36])
+    s += `<line x1="${cx(lon)}" y1="0" x2="${cx(lon)}" y2="${cy(49)}" stroke="var(--rule-2)" stroke-width="1" stroke-dasharray="4 3"/>`;
+  const prov = [[-124.0,54.6,"British Columbia"],[-115.5,54.6,"Alberta"],[-105.8,54.6,"Saskatchewan"],[-99.4,54.6,"Manitoba"],[-116,48.3,"United States"]];
+  for (const [lo,la,nm] of prov)
+    s += `<text class="mtxt ctry" x="${cx(lo).toFixed(1)}" y="${cy(la).toFixed(1)}">${nm}</text>`;
+  for (const p of can.slice().sort((a,b) => b.n - a.n)) {
+    s += `<g class="dot" data-tip="${esc(p.label)}|${p.n}|${esc(p.modern)}|0">`
+       + `<circle cx="${cx(p.lon).toFixed(1)}" cy="${cy(p.lat).toFixed(1)}" r="${radius(p.n).toFixed(1)}"`
+       + ` fill="var(--dot-ink)" fill-opacity=".8"/></g>`;
+  }
+  /* Glenside, Outlook and Saskatoon are one settlement area, and Minitonas sits
+     next door to Swan River — same clustering as the European map. */
+  const CCLUSTERS = [
+    {label:"Glenside · Outlook · Saskatoon", sub:"the Saskatchewan settlement, from 1913",
+     lon:-106.78, lat:51.70, lx:296, ly:70,  anchor:"start"},
+    {label:"Minitonas · Swan River",  sub:"Manitoba",
+     lon:-101.15, lat:52.09, lx:690, ly:70,  anchor:"end"},
+    {label:"Winnipeg",     sub:"", lon:-97.138,  lat:49.895, lx:638, ly:176, anchor:"end"},
+    {label:"Vancouver",    sub:"", lon:-123.121, lat:49.283, lx:186, ly:196, anchor:"start"},
+    {label:"Medicine Hat", sub:"", lon:-110.677, lat:50.041, lx:414, ly:172, anchor:"start"},
+    {label:"Regina",       sub:"", lon:-104.619, lat:50.445, lx:526, ly:160, anchor:"start"},
+    {label:"Prince Rupert",sub:"", lon:-130.32, lat:54.312, lx:48, ly:44, anchor:"start"},
+  ];
+  for (const c of CCLUSTERS) {
+    const dx = cx(c.lon), dy = cy(c.lat);
+    const end = c.anchor === "end" ? c.lx + 4 : c.lx - 4;
+    s += `<path class="leader" d="M${end} ${c.ly - 4} L${dx.toFixed(1)} ${dy.toFixed(1)}"/>`
+       + `<circle class="leader-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="1.8"/>`
+       + `<text class="place-lab" text-anchor="${c.anchor}" x="${c.lx}" y="${c.ly}">${esc(c.label)}</text>`
+       + (c.sub ? `<text class="place-sub" text-anchor="${c.anchor}" x="${c.lx}" y="${c.ly + 12}">${esc(c.sub)}</text>` : "");
+  }
+  svg.innerHTML = s;
+  wireDots(svg);
+
+  const off = DATA.places.filter(p => p.region === "CAN" && !(p.lon > CLON0 && p.lon < -95 && p.lat > 47.5));
+  document.getElementById("offmap").textContent = off.length
+    ? "Off this map: " + off.map(p => `${p.label} (${p.n})`).join(", ") + "."
+    : "";
+}
+
+function wireDots(svg){
+  svg.addEventListener("mousemove", e => {
+    const g = e.target.closest(".dot");
+    if (!g) return hideTip();
+    const [lab, n, modern, ap] = g.dataset.tip.split("|");
+    showTip(`<div class="t-n">${lab}</div><div class="t-y">${n} recorded event${n==1?"":"s"}</div>`
+      + `<div class="t-m">${modern}${ap === "1" ? " · position approximate" : ""}</div>`, e);
+  });
+  svg.addEventListener("mouseleave", hideTip);
+}
+
+/* ------------------------------------------------------------ places table */
+{
+  document.getElementById("mtable").innerHTML =
+    `<thead><tr><th>Place</th><th>Today</th><th>Events</th><th>Region</th><th>Position</th></tr></thead><tbody>`
+    + DATA.places.map(p => `<tr><td>${esc(p.label)}</td><td>${esc(p.modern)}</td><td class="y">${p.n}</td>`
+      + `<td>${STATION_NAME[STATION[p.region]||"unk"]}</td>`
+      + `<td>${p.approx ? "approximate" : "exact"}</td></tr>`).join("")
+    + `</tbody>`;
+}
+
+/* ------------------------------------------------------------------ notes */
+{
+  const s = DATA.stats;
+  document.getElementById("notes").innerHTML = [
+    `<b>The file is a MyHeritage export</b> of ${s.individuals} people in ${s.families} families, dated 30 August 2026. Everything here is read from it directly — nothing has been added, and no dates have been guessed.`,
+    `<span class="flag">${s.line_missing_birth} of the ${s.direct_line} direct ancestors have no birth year</span> and ${s.line_missing_death} have no death year. Those with no birth year cannot be placed on the timeline at all and are listed by name under their generation instead. A dotted line means the death year is missing, not a long life.`,
+    `<span class="flag">${s.approx_places} of the ${DATA.places.length} places are positioned approximately</span> — small Volhynian and Silesian villages that no longer exist under that name, plus a few buckets that stand for several nearby villages rather than one. They are drawn with a dashed ring and marked in the table.`,
+    `Place names were merged from 361 different spellings. <b>Mirotín</b> alone appeared 16 ways, <b>Zelów</b> 16, <b>Lipník nad Bečvou</b> 22. Names are shown as the family wrote them, with today's official name underneath.`,
+    `Two entries could not be placed: one reading simply "Austria", and one where a cause of death — <code>Tuberkulosa</code> — had been typed into the place field.`,
+    `<b>No personal data is included.</b> Phone numbers, email and street addresses in the original file were excluded at extraction; living people appear as a name and a birth year only.`,
+    `The migration lines compare each person's birthplace to their place of death. They show where people ended up, not the route they took or when they moved.`,
+  ].map(t => `<li>${t}</li>`).join("");
+}
+</script>

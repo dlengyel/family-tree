@@ -1,0 +1,9 @@
+# The source GEDCOM is never committed — it contains phone numbers, email
+# and street addresses for living people.
+*.ged
+*.GED
+
+.DS_Store
+__pycache__/
+*.pyc
+.claude/settings.local.json
